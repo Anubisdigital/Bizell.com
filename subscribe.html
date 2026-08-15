@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bizell — Subscription Plans</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --red: #ed1717;
+            --red-deep: #c00f0f;
+            --ink: #111111;
+            --white: #ffffff;
+            --paper: #f5f4f1;
+            --gray: #6b6b6b;
+            --green: #17963a;
+            --display: 'Space Grotesk', sans-serif;
+            --body: 'IBM Plex Sans', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+        body {
+            font-family: var(--body);
+            background: var(--paper);
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+        /* --- Header --- */
+        header {
+            background: var(--ink);
+            color: var(--white);
+            padding: 16px 0;
+            border-bottom: 2px solid var(--ink);
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-mark img { height: 34px; width: auto;  }
+        .nav-actions { display: flex; gap: 16px; align-items: center; }
+        .btn-outline-white {
+            background: transparent; color: var(--white);
+            border: 2px solid var(--white);
+            padding: 8px 16px;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-outline-white:hover { background: var(--white); color: var(--ink); }
+
+        /* --- Page Title --- */
+        .page-header {
+            padding: 48px 0 24px;
+            text-align: center;
+        }
+        .page-header h1 { font-family: var(--display); font-size: 36px; font-weight: 700; }
+        .page-header p { font-size: 16px; color: var(--gray); margin-top: 8px; }
+
+        /* --- Plans Grid --- */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            padding: 24px 0 48px;
+        }
+        @media (max-width: 700px) { .plans-grid { grid-template-columns: 1fr; } }
+
+        /* --- Plan Card --- */
+        .plan-card {
+            background: var(--white);
+            border: 2px solid var(--ink);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.15s ease;
+        }
+        .plan-card:hover { transform: translateY(-4px); }
+        .plan-card.featured { border-color: var(--red); }
+        .plan-card h2 { font-family: var(--display); font-size: 24px; font-weight: 700; }
+        .plan-card .price {
+            font-family: var(--display);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--red);
+            margin: 8px 0 4px;
+        }
+        .plan-card .period { font-size: 14px; color: var(--gray); margin-bottom: 16px; }
+        .plan-card ul { list-style: none; margin: 16px 0 24px; flex: 1; }
+        .plan-card ul li { padding: 6px 0; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+        .plan-card ul li i { color: var(--green); width: 16px; }
+        .plan-card ul li i.fa-xmark { color: var(--red); }
+
+        .btn-subscribe {
+            width: 100%;
+            padding: 16px;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background: var(--ink);
+            color: var(--white);
+            transition: background 0.15s ease;
+        }
+        .btn-subscribe:hover { background: #000; }
+        .btn-subscribe.red { background: var(--red); }
+        .btn-subscribe.red:hover { background: var(--red-deep); }
+
+        .msg-box {
+            margin-top: 16px;
+            padding: 12px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+        .msg-box.error { display: block; background: #ffe6e6; color: var(--red); border: 1px solid var(--red); }
+        .msg-box.success { display: block; background: #e6ffe6; color: var(--green); border: 1px solid var(--green); }
+
+        footer {
+            margin-top: auto;
+            background: var(--ink);
+            color: #999;
+            text-align: center;
+            padding: 32px 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="wrap nav-row">
+        <!-- LOGO ADDED HERE -->
+        <a href="index.html" class="logo-mark">
+            <img src="bizell-logo.jpg" alt="Bizell">
+        </a>
+        <div class="nav-actions">
+            <a href="auth.html" class="btn-outline-white">Log in</a>
+        </div>
+    </div>
+</header>
+
+<main class="wrap">
+    <div class="page-header">
+        <h1>Choose your plan</h1>
+        <p>Get your business listed on Bizell and reach buyers who are actively looking.</p>
+    </div>
+
+    <!-- Plans -->
+    <div class="plans-grid">
+        <!-- Normal Plan -->
+        <div class="plan-card">
+            <h2>Standard</h2>
+            <div class="price">50,000 UGX</div>
+            <div class="period">per month</div>
+            <ul>
+                <li><i class="fa-solid fa-check"></i> List your business</li>
+                <li><i class="fa-solid fa-check"></i> Up to 5 images</li>
+                <li><i class="fa-solid fa-check"></i> Full description &amp; location</li>
+                <li><i class="fa-solid fa-check"></i> Direct buyer contact</li>
+                <li><i class="fa-solid fa-xmark"></i> Kakooza Ronald video</li>
+            </ul>
+            <button class="btn-subscribe" onclick="subscribe('normal')">Subscribe</button>
+        </div>
+
+        <!-- Kakooza Plan -->
+        <div class="plan-card featured">
+            <h2>Kakooza Video <span style="font-size:12px; background:var(--red); color:#fff; padding:2px 10px; font-weight:700; letter-spacing:0.5px;">BEST VALUE</span></h2>
+            <div class="price">100,000 UGX</div>
+            <div class="period">per month</div>
+            <ul>
+                <li><i class="fa-solid fa-check"></i> Everything in Standard</li>
+                <li><i class="fa-solid fa-check"></i> <strong>Kakooza Ronald</strong> promotional video</li>
+                <li><i class="fa-solid fa-check"></i> Video posted on social media</li>
+                <li><i class="fa-solid fa-check"></i> Premium visibility</li>
+            </ul>
+            <button class="btn-subscribe red" onclick="subscribe('kakooza')">Subscribe</button>
+        </div>
+    </div>
+
+    <div class="msg-box" id="subMsg"></div>
+</main>
+
+<footer>
+    <div class="wrap">&copy; 2026 Bizell. All rights reserved.</div>
+</footer>
+
+<script>
+    // ============================================================
+    // CONFIG
+    // ============================================================
+    const PAYMENTS_API = "https://pay.bizellug.com";
+
+    // ============================================================
+    // SUBSCRIBE FUNCTION
+    // ============================================================
+    async function subscribe(plan) {
+        const msg = document.getElementById('subMsg');
+        msg.className = 'msg-box';
+        msg.style.display = 'none';
+
+        // 1. Check if user is logged in
+        const uid = localStorage.getItem('bizell_uid');
+        if (!uid) {
+            msg.className = 'msg-box error';
+            msg.textContent = 'You must be logged in to subscribe. Please log in first.';
+            msg.style.display = 'block';
+            setTimeout(() => { window.location.href = 'auth.html'; }, 2000);
+            return;
+        }
+
+        // 2. Disable buttons
+        const btns = document.querySelectorAll('.btn-subscribe');
+        btns.forEach(b => { b.disabled = true; b.textContent = 'Processing...'; });
+
+        try {
+            const resp = await fetch(`${PAYMENTS_API}/create-checkout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid, plan, email: '', phone: '' })
+            });
+            const data = await resp.json();
+
+            if (data.checkoutUrl) {
+                // Redirect user to Pesapal
+                window.location.href = data.checkoutUrl;
+            } else {
+                msg.className = 'msg-box error';
+                msg.textContent = data.error || 'Failed to create payment link. Please try again.';
+                msg.style.display = 'block';
+                btns.forEach(b => { b.disabled = false; b.textContent = 'Subscribe'; });
+            }
+        } catch (err) {
+            msg.className = 'msg-box error';
+            msg.textContent = 'Network error. Please try again.';
+            msg.style.display = 'block';
+            btns.forEach(b => { b.disabled = false; b.textContent = 'Subscribe'; });
+        }
+    }
+</script>
+</body>
+</html>
