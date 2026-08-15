@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bizell — Business Details</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --red: #ed1717;
+            --red-deep: #c00f0f;
+            --ink: #111111;
+            --white: #ffffff;
+            --paper: #f5f4f1;
+            --gray: #6b6b6b;
+            --green: #17963a;
+            --display: 'Space Grotesk', sans-serif;
+            --body: 'IBM Plex Sans', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+        body {
+            font-family: var(--body);
+            background: var(--paper);
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+        /* --- Header --- */
+        header {
+            background: var(--ink);
+            color: var(--white);
+            padding: 16px 0;
+            border-bottom: 2px solid var(--ink);
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-mark img { height: 34px; width: auto; filter: brightness(0) invert(1); }
+        .nav-actions { display: flex; gap: 16px; align-items: center; }
+        .btn-outline-white {
+            background: transparent; color: var(--white);
+            border: 2px solid var(--white);
+            padding: 8px 16px;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .btn-outline-white:hover { background: var(--white); color: var(--ink); }
+
+        /* --- Main Layout --- */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px 0;
+        }
+        @media (max-width: 860px) { .detail-grid { grid-template-columns: 1fr; } }
+
+        /* --- Images --- */
+        .gallery {
+            background: var(--white);
+            border: 2px solid var(--ink);
+            padding: 16px;
+        }
+        .gallery img, .gallery video {
+            width: 100%; height: auto; display: block; border: 1px solid #eee;
+        }
+        .thumb-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-top: 12px;
+        }
+        .thumb-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer; border: 1px solid #ccc; }
+
+        /* --- Info --- */
+        .info-card {
+            background: var(--white);
+            border: 2px solid var(--ink);
+            padding: 32px;
+        }
+        .info-card h1 { font-family: var(--display); font-size: 30px; font-weight: 700; }
+        .info-price { font-family: var(--mono); font-size: 24px; color: var(--green); margin: 8px 0 16px 0; }
+        .info-meta { display: flex; gap: 16px; font-size: 14px; color: var(--gray); margin-bottom: 16px; }
+        .info-desc { font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+        
+        /* --- Contact Box --- */
+        .contact-box {
+            background: var(--paper); border: 1px solid #ddd; padding: 16px; margin-top: 16px;
+        }
+        .contact-box p { font-size: 14px; margin: 4px 0; }
+
+        /* --- THE DISCLAIMER (This is what you asked for) --- */
+        .disclaimer-box {
+            border: 2px solid var(--red);
+            background: #fff8f8;
+            padding: 16px 20px;
+            margin-top: 24px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .disclaimer-box i { color: var(--red); margin-right: 8px; }
+        .disclaimer-box strong { color: var(--ink); }
+
+        /* --- Report Button --- */
+        .btn-report {
+            background: transparent; color: var(--red);
+            border: 2px solid var(--red);
+            padding: 10px 16px; font-weight: 700; font-size: 13px;
+            cursor: pointer; margin-top: 12px; display: inline-block;
+        }
+        .btn-report:hover { background: var(--red); color: var(--white); }
+
+        /* --- Skeleton --- */
+        .skel-block { background: #ececec; animation: shimmer 1.3s infinite; height: 20px; margin: 8px 0; }
+        .skel-img { width: 100%; aspect-ratio: 4/3; }
+        @keyframes shimmer { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+        /* --- Footer --- */
+        footer { margin-top: auto; background: var(--ink); color: #999; text-align: center; padding: 32px 0; font-size: 13px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="wrap nav-row">
+        <a href="index.html" class="logo-mark">
+            <img src="bizell-logo.jpg" alt="Bizell">
+        </a>
+        <div class="nav-actions">
+            <a href="auth.html" class="btn-outline-white">Log in</a>
+        </div>
+    </div>
+</header>
+
+<main class="wrap detail-grid" id="listingContainer">
+    <!-- Skeleton Loading -->
+    <div class="gallery"><div class="skel-block skel-img"></div></div>
+    <div class="info-card">
+        <div class="skel-block" style="width:70%; height:32px;"></div>
+        <div class="skel-block" style="width:40%; height:24px;"></div>
+        <div class="skel-block" style="width:60%;"></div>
+        <div class="skel-block" style="width:100%; height:80px;"></div>
+    </div>
+</main>
+
+<footer>
+    <div class="wrap">
+        &copy; 2026 Bizell. All rights reserved.
+    </div>
+</footer>
+
+<script>
+    // --- CONFIG ---
+    const LISTINGS_API = "https://listings-worker-bizell.kakoozaronald71.workers.dev";
+
+    // --- Get ID from URL ---
+    const params = new URLSearchParams(window.location.search);
+    const listingId = params.get('id');
+
+    if (!listingId) {
+        document.getElementById('listingContainer').innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:40px; background:var(--white); border:2px solid var(--ink);">
+                <h2>Listing not found</h2>
+                <a href="index.html" class="btn-primary" style="display:inline-block; margin-top:12px; padding:10px 20px; background:var(--red); color:#fff; text-decoration:none;">Go back home</a>
+            </div>
+        `;
+    } else {
+        loadListing(listingId);
+    }
+
+    async function loadListing(id) {
+        try {
+            const resp = await fetch(`${LISTINGS_API}/listings/${id}`);
+            if (!resp.ok) throw new Error('Not found');
+            const data = await resp.json();
+
+            const img = (data.images && data.images[0]) || data.videoUrl || 'https://via.placeholder.com/600x400?text=No+Image';
+            const thumbnails = (data.images || []).map(u => `<img src="${u}" onclick="document.getElementById('mainImg').src=this.src">`).join('');
+
+            document.getElementById('listingContainer').innerHTML = `
+                <div class="gallery">
+                    <img src="${img}" id="mainImg" alt="${data.businessName || 'Listing'}">
+                    ${thumbnails ? `<div class="thumb-grid">${thumbnails}</div>` : ''}
+                </div>
+                <div class="info-card">
+                    <h1>${data.businessName || 'Untitled Business'}</h1>
+                    <div class="info-price">${data.price ? Number(data.price).toLocaleString() + ' UGX' : 'Price on request'}</div>
+                    <div class="info-meta">
+                        <span><i class="fa-solid fa-location-dot"></i> ${data.location || 'Location not listed'}</span>
+                        <span><i class="fa-solid fa-tag"></i> ${data.category || 'General'}</span>
+                    </div>
+                    <div class="info-desc">${data.description || 'No description provided.'}</div>
+
+                    <div class="contact-box">
+                        <p><i class="fa-solid fa-user"></i> Seller: <strong>Contact via dashboard</strong></p>
+                        <p><i class="fa-solid fa-envelope"></i> Messages sent through the platform.</p>
+                    </div>
+
+                    <!-- ⚠️ THE DISCLAIMER YOU REQUESTED -->
+                    <div class="disclaimer-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <strong>Important Notice:</strong> Bizell is strictly a marketplace platform that connects buyers and sellers. 
+                        <strong>We do not process transactions, hold escrow, or act as an agent.</strong> 
+                        Any deal, payment, or transfer of assets happens <strong>directly</strong> between the buyer and the seller. 
+                        Bizell is not a party to any transaction and assumes <strong>no responsibility or liability</strong> for the outcome of any deal, disputes, or financial exchanges that occur off-platform.
+                        <div style="margin-top:8px; font-size:12px; color:#888;">Always verify the seller and conduct your own due diligence before making any payments.</div>
+                    </div>
+
+                    <button class="btn-report" onclick="reportListing('${data.id}')">
+                        <i class="fa-solid fa-flag"></i> Report this listing
+                    </button>
+                </div>
+            `;
+        } catch (e) {
+            document.getElementById('listingContainer').innerHTML = `
+                <div style="grid-column:1/-1; text-align:center; padding:40px; background:var(--white); border:2px solid var(--ink);">
+                    <h2><i class="fa-solid fa-circle-exclamation" style="color:var(--red);"></i> Listing unavailable</h2>
+                    <p style="color:var(--gray); margin:12px 0;">It may have been taken down or is still pending review.</p>
+                    <a href="index.html" class="btn-primary" style="display:inline-block; padding:10px 20px; background:var(--red); color:#fff; text-decoration:none;">Go back home</a>
+                </div>
+            `;
+        }
+    }
+
+    // --- Report Function ---
+    async function reportListing(id) {
+        const uid = localStorage.getItem('bizell_uid');
+        if (!uid) {
+            alert('You must be logged in to report a listing.');
+            return;
+        }
+        const reason = prompt('Please describe why you are reporting this listing:');
+        if (!reason) return;
+
+        // This calls your reports-and-admin-worker (which we built earlier)
+        try {
+            const resp = await fetch(`https://reports-and-admin-worker.kakoozaronald71.workers.dev/reports/create`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ listingId: id, buyerId: uid, reason })
+            });
+            if (resp.ok) {
+                alert('Report submitted successfully. Bizell will review it shortly.');
+            } else {
+                alert('Failed to submit report. Please try again.');
+            }
+        } catch (e) {
+            alert('Network error. Please try again.');
+        }
+    }
+</script>
+</body>
+</html>
