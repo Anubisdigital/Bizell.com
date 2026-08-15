@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bizell — Buy and Sell Real Businesses</title>
+<meta name="description" content="Bizell is where real businesses and investments get listed for sale. Browse live listings or list your own — no middleman, no escrow, just direct contact.">
+<link rel="icon" type="image/png" href="favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+  :root{
+    --red:#ed1717;
+    --red-deep:#c00f0f;
+    --ink:#111111;
+    --white:#ffffff;
+    --green:#17963a;
+    --paper:#f5f4f1;
+    --line:#111111;
+    --gray:#6b6b6b;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--body);
+    color:var(--ink);
+    background:var(--white);
+    -webkit-font-smoothing:antialiased;
+  }
+  img{display:block; max-width:100%;}
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer; border:none; border-radius:0;}
+  ul{list-style:none;}
+  section{padding:96px 0;}
+  .wrap{max-width:1240px; margin:0 auto; padding:0 32px;}
+  h1,h2,h3{font-family:var(--display); line-height:1.05; letter-spacing:-0.01em;}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{content:""; width:16px; height:2px; background:var(--red); display:inline-block;}
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:15px 26px;
+    font-family:var(--display);
+    font-weight:700;
+    font-size:15px;
+    border:2px solid var(--ink);
+    white-space:nowrap;
+    transition:transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--red); color:var(--white); border-color:var(--red);}
+  .btn-primary:hover{background:var(--red-deep); border-color:var(--red-deep);}
+  .btn-dark{background:var(--ink); color:var(--white);}
+  .btn-dark:hover{background:#000;}
+  .btn-outline{background:transparent; color:var(--ink);}
+  .btn-outline:hover{background:var(--ink); color:var(--white);}
+  .btn-outline-white{background:transparent; color:var(--white); border-color:var(--white);}
+  .btn-outline-white:hover{background:var(--white); color:var(--ink);}
+  .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+  :focus-visible{outline:3px solid var(--red); outline-offset:2px;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:200;
+    background:var(--ink);
+    border-bottom:2px solid var(--ink);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    height:76px;
+  }
+  .logo{height:30px; width:auto; filter:brightness(0) invert(1);}
+  .logo-mark{display:flex; align-items:center; gap:10px;}
+  .logo-mark img{height:34px; width:auto;}
+  nav.primary-nav{display:flex; align-items:center; gap:36px;}
+  nav.primary-nav a{
+    font-family:var(--display); font-weight:500; font-size:14.5px;
+    color:#cfcfcf;
+    position:relative;
+    padding:4px 0;
+  }
+  nav.primary-nav a:hover{color:var(--white);}
+  .nav-actions{display:flex; align-items:center; gap:14px;}
+  .nav-actions .btn{padding:11px 20px; font-size:13.5px;}
+  #authSlot{display:flex; align-items:center; gap:14px;}
+  #authSlot a.login-link{
+    font-family:var(--display); font-weight:600; font-size:14px; color:var(--white);
+  }
+  .menu-toggle{display:none; background:none; color:var(--white); font-size:22px;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    min-height:680px;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    background-image:linear-gradient(100deg, rgba(17,17,17,.86) 0%, rgba(17,17,17,.62) 42%, rgba(237,23,23,.30) 100%), url('hero.jpg');
+    background-size:cover;
+    background-position:center 18%;
+  }
+  .hero-copy{
+    position:relative;
+    z-index:2;
+    padding:110px 32px;
+    display:flex; flex-direction:column; gap:26px;
+    max-width:620px;
+  }
+  .hero-copy .eyebrow{color:var(--white); opacity:.85;}
+  .hero-copy .eyebrow::before{background:var(--red);}
+  .hero h1{font-size:clamp(38px, 5vw, 64px); font-weight:700; color:var(--white);}
+  .hero h1 span{color:var(--red);}
+  .hero p.lede{font-size:18px; line-height:1.55; color:#f0f0f0; max-width:480px;}
+  .hero-cta{display:flex; gap:14px; flex-wrap:wrap; margin-top:6px;}
+  .hero-fine{
+    font-family:var(--mono); font-size:12.5px; color:#d8d8d8;
+    display:flex; align-items:center; gap:8px;
+  }
+  .hero-mascot-tag{
+    position:absolute; right:32px; top:36px; z-index:2;
+    background:var(--ink); color:var(--white);
+    font-family:var(--mono); font-size:12px;
+    padding:8px 12px;
+    display:flex; align-items:center; gap:8px;
+    border:2px solid var(--white);
+  }
+  .hero-mascot-tag img{width:18px; height:18px; object-fit:contain;}
+
+  /* ---------- Value strip ---------- */
+  .value-strip{
+    border-top:2px solid var(--ink);
+    border-bottom:2px solid var(--ink);
+    background:var(--paper);
+  }
+  .value-strip .wrap{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    padding:0;
+  }
+  .value-item{
+    padding:34px 30px;
+    border-right:2px solid var(--ink);
+    display:flex; gap:16px; align-items:flex-start;
+  }
+  .value-item:last-child{border-right:none;}
+  .value-item i{font-size:20px; color:var(--red); margin-top:3px;}
+  .value-item h3{font-size:16px; margin-bottom:6px;}
+  .value-item p{font-size:14px; color:var(--gray); line-height:1.5;}
+
+  /* ---------- How it works ---------- */
+  .how{padding-bottom:0;}
+  .section-head{display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:48px; flex-wrap:wrap;}
+  .section-head h2{font-size:clamp(28px,3.4vw,40px);}
+  .section-head p{max-width:420px; color:var(--gray); font-size:15px; line-height:1.55;}
+
+  .how-steps{display:flex; flex-direction:column;}
+  .how-step{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border-top:2px solid var(--ink);
+    min-height:340px;
+  }
+  .how-step:last-child{border-bottom:2px solid var(--ink);}
+  .how-step.flip .how-media{order:2;}
+  .how-step.flip .how-text{order:1;}
+  .how-media{position:relative; overflow:hidden;}
+  .how-media img{width:100%; height:100%; object-fit:cover; min-height:340px;}
+  .how-media .half{
+    position:absolute; inset:0;
+    background:var(--red);
+    mix-blend-mode:multiply;
+    opacity:.14;
+  }
+  .how-text{
+    padding:48px 56px;
+    display:flex; flex-direction:column; justify-content:center; gap:14px;
+    background:var(--white);
+  }
+  .how-step.flip .how-text{background:var(--paper);}
+  .how-step .step-label{font-family:var(--mono); font-size:12px; color:var(--red-deep); letter-spacing:.1em; text-transform:uppercase;}
+  .how-text h3{font-size:26px;}
+  .how-text p{font-size:15px; color:#333; line-height:1.6; max-width:420px;}
+
+  /* ---------- Search + Filter Bar ---------- */
+  .filter-bar {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .filter-bar input, .filter-bar select {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    background: var(--white);
+    font-family: var(--body);
+    font-size: 14px;
+    flex: 1;
+    min-width: 160px;
+  }
+  .filter-bar button {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-weight: 700;
+    font-family: var(--display);
+    font-size: 14px;
+  }
+  .filter-bar button:hover { background: var(--red-deep); }
+
+  /* ---------- Featured listings ---------- */
+  .listings{background:var(--white);}
+  .listing-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+    gap:2px;
+    background:var(--ink);
+    border:2px solid var(--ink);
+  }
+  .listing-card{
+    background:var(--white);
+    display:flex; flex-direction:column;
+  }
+  .listing-media{position:relative; aspect-ratio:4/3; overflow:hidden; background:var(--paper);}
+  .listing-media img{width:100%; height:100%; object-fit:cover;}
+  .listing-cat{
+    position:absolute; top:10px; left:10px;
+    background:var(--ink); color:var(--white);
+    font-family:var(--mono); font-size:11px; text-transform:uppercase;
+    padding:5px 9px; letter-spacing:.06em;
+  }
+  .listing-body{padding:20px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .listing-body h3{font-size:18px; font-family:var(--display); font-weight:700;}
+  .listing-meta{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--gray);}
+  .listing-price{
+    margin-top:auto;
+    font-family:var(--mono); font-weight:600; font-size:17px; color:var(--green);
+    padding-top:12px; border-top:1px solid #e4e4e4;
+  }
+  .listing-link{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family:var(--display); font-weight:600; font-size:13.5px;
+    margin-top:4px;
+  }
+  .listing-link i{transition:transform .15s ease;}
+  .listing-card:hover .listing-link i{transform:translateX(4px);}
+
+  /* skeleton */
+  .skeleton{background:var(--white); display:flex; flex-direction:column;}
+  .skel-block{background:linear-gradient(100deg, #ececec 20%, #f6f6f6 40%, #ececec 60%); background-size:200% 100%; animation:shimmer 1.3s infinite;}
+  .skel-media{aspect-ratio:4/3;}
+  .skel-body{padding:20px; display:flex; flex-direction:column; gap:10px;}
+  .skel-line{height:12px; width:70%;}
+  .skel-line.short{width:40%;}
+  @keyframes shimmer{
+    0%{background-position:200% 0;}
+    100%{background-position:-200% 0;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .skel-block{animation:none;}
+  }
+
+  .listings-state{
+    grid-column:1/-1;
+    padding:64px 24px;
+    text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    background:var(--paper);
+  }
+  .listings-state i{font-size:26px; color:var(--red);}
+  .listings-state h3{font-family:var(--display); font-size:20px;}
+  .listings-state p{color:var(--gray); font-size:14px; max-width:360px;}
+
+  /* ---------- Mobile / access band ---------- */
+  .access-band{
+    background:var(--ink);
+    color:var(--white);
+    overflow:hidden;
+  }
+  .access-band .wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    align-items:center;
+    gap:40px;
+  }
+  .access-copy h2{font-size:clamp(26px,3vw,36px); color:var(--white); margin-bottom:16px;}
+  .access-copy p{color:#c9c9c9; font-size:15px; line-height:1.6; max-width:420px; margin-bottom:26px;}
+  .access-visual{
+    position:relative;
+    display:flex; justify-content:center;
+    background:#F5AF01;
+    padding:0;
+    align-self:stretch;
+  }
+  .access-visual img{width:70%; max-width:300px; align-self:flex-end;}
+
+  /* ---------- CTA band ---------- */
+  .cta-band{
+    background:var(--red);
+    color:var(--white);
+    text-align:center;
+  }
+  .cta-band h2{font-size:clamp(30px,4vw,46px); margin-bottom:18px;}
+  .cta-band p{font-size:16px; margin-bottom:34px; opacity:.92;}
+  .cta-actions{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+  .cta-band .btn-dark{border-color:var(--ink);}
+  .cta-band .btn-outline-white{border-color:var(--white); color:var(--white);}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--ink); color:#d8d8d8; padding-top:72px;}
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:40px;
+    padding-bottom:56px;
+    border-bottom:1px solid #333;
+  }
+  .footer-brand img{height:28px; margin-bottom:16px;}
+  .footer-brand p{font-size:13.5px; color:#9a9a9a; line-height:1.6; max-width:280px;}
+  .footer-col h4{font-family:var(--display); color:var(--white); font-size:13px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:16px;}
+  .footer-col a{display:block; font-size:14px; color:#b8b8b8; margin-bottom:12px;}
+  .footer-col a:hover{color:var(--white);}
+  .footer-social{display:flex; gap:14px; margin-top:6px;}
+  .footer-social a{width:36px; height:36px; border:1px solid #444; display:flex; align-items:center; justify-content:center;}
+  .footer-social a:hover{background:var(--red); border-color:var(--red);}
+  .footer-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:24px 0; font-size:12.5px; color:#8a8a8a; flex-wrap:wrap; gap:10px;
+  }
+  .footer-bottom a{color:#8a8a8a;}
+  .footer-bottom a:hover{color:var(--white);}
+
+  /* ---------- Cookie banner ---------- */
+  #cookieBanner{
+    position:fixed; left:0; right:0; bottom:0; z-index:500;
+    background:var(--ink); color:var(--white);
+    border-top:2px solid var(--red);
+    padding:20px 24px;
+    display:none;
+  }
+  #cookieBanner.show{display:block;}
+  .cookie-inner{
+    max-width:1240px; margin:0 auto;
+    display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  }
+  .cookie-icon{width:38px; height:38px; flex:none; object-fit:contain;}
+  .cookie-text{flex:1; min-width:240px; font-size:13.5px; line-height:1.55; color:#d6d6d6;}
+  .cookie-text a{color:var(--white); text-decoration:underline;}
+  .cookie-actions{display:flex; gap:10px; flex:none;}
+  .cookie-btn{padding:11px 20px; font-family:var(--display); font-weight:700; font-size:13.5px; border:2px solid transparent;}
+  .cookie-reject{background:var(--red); color:var(--white);}
+  .cookie-reject:hover{background:var(--red-deep);}
+  .cookie-accept{background:var(--green); color:var(--white);}
+  .cookie-accept:hover{background:#127a2f;}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:980px){
+    .value-strip .wrap{grid-template-columns:1fr;}
+    .value-item{border-right:none; border-bottom:2px solid var(--ink);}
+    .value-item:last-child{border-bottom:none;}
+    .how-step, .how-step.flip{grid-template-columns:1fr;}
+    .how-step.flip .how-media, .how-step.flip .how-text{order:initial;}
+    .how-media img{min-height:260px;}
+    .access-band .wrap{grid-template-columns:1fr;}
+    .access-visual{padding-top:32px;}
+    .footer-grid{grid-template-columns:1fr 1fr;}
+    .filter-bar input, .filter-bar select { min-width: 120px; flex: 1 1 100%; }
+  }
+  @media (max-width:760px){
+    nav.primary-nav{
+      position:fixed; top:76px; left:0; right:0; bottom:0;
+      background:var(--ink);
+      flex-direction:column; align-items:flex-start;
+      padding:32px;
+      gap:22px;
+      transform:translateX(100%);
+      transition:transform .25s ease;
+    }
+    nav.primary-nav.open{transform:translateX(0);}
+    .nav-actions{display:none;}
+    .menu-toggle{display:block;}
+    .hero{min-height:560px; background-position:center;}
+    .hero-copy{padding:100px 24px 56px;}
+    .hero-mascot-tag{right:20px; top:20px; font-size:11px; padding:6px 10px;}
+    section{padding:64px 0;}
+    .footer-grid{grid-template-columns:1fr; gap:32px;}
+    .cookie-inner{flex-direction:column; align-items:flex-start;}
+    .cookie-actions{width:100%;}
+    .cookie-btn{flex:1;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav-row">
+    <a href="index.html" class="logo-mark" aria-label="Bizell home">
+      <img src="bizell-logo.jpg" alt="Bizell">
+    </a>
+    <nav class="primary-nav" id="primaryNav">
+      <a href="#listingGrid">Listings</a>
+      <a href="seller-dashboard.html">Sell a business</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="how.html">How it works</a>
+    </nav>
+    <div class="nav-actions" id="authSlot">
+      <a href="auth.html" class="login-link">Log in</a>
+      
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" style="padding:0;">
+    <div class="hero-mascot-tag"><img src="mascot-face.png" alt="">bizellug.com</div>
+    <div class="hero-copy">
+      <span class="eyebrow">Business marketplace</span>
+      <h1>Sell the business.<br><span>Skip the broker.</span></h1>
+      <p class="lede">Bizell lists real businesses and investments for sale — direct from owner to buyer. You negotiate, you close, you keep it off-platform once the conversation starts.</p>
+      <div class="hero-cta">
+        <a href="seller-dashboard.html" class="btn btn-primary"><i class="fa-solid fa-arrow-up-right-dots"></i> List your business</a>
+        <a href="#listingGrid" class="btn btn-outline-white"><i class="fa-solid fa-magnifying-glass"></i> Browse listings</a>
+      </div>
+      <div class="hero-fine"><i class="fa-solid fa-shield-halved"></i> Every listing is screened before it goes live</div>
+    </div>
+  </section>
+
+  <!-- FILTER BAR + SEARCH -->
+  <section class="listings wrap" style="padding-top: 96px;">
+    <div class="section-head">
+      <h2>Businesses live on Bizell</h2>
+      <p>Filter by category or price to find exactly what you're looking for.</p>
+    </div>
+
+    <div class="filter-bar">
+      <input type="text" id="searchInput" placeholder="Search business name...">
+      <select id="categoryFilter">
+        <option value="">All Categories</option>
+        <option value="fashion">Fashion</option>
+        <option value="food">Food</option>
+        <option value="agriculture">Agriculture</option>
+        <option value="retail">Retail</option>
+        <option value="technology">Technology</option>
+        <option value="real estate">Real Estate</option>
+        <option value="other">Other</option>
+      </select>
+      <select id="priceFilter">
+        <option value="">All Prices</option>
+        <option value="0-100000">1 to 100k UGX</option>
+        <option value="100001-1000000">101k to 1M UGX</option>
+        <option value="1000001-999999999">1M+ UGX</option>
+      </select>
+      <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Filter</button>
+    </div>
+
+    <div class="listing-grid" id="listingGrid">
+      <!-- populated by JS: skeletons -> real listings -> empty state -->
+    </div>
+  </section>
+
+  <!-- VALUE STRIP -->
+  <section class="value-strip" style="padding:0;">
+    <div class="wrap">
+      <div class="value-item">
+        <i class="fa-solid fa-user-check"></i>
+        <div><h3>Direct contact</h3><p>Reach the actual seller or buyer. No agent fees, no middleman inbox.</p></div>
+      </div>
+      <div class="value-item">
+        <i class="fa-solid fa-magnifying-glass-dollar"></i>
+        <div><h3>Screened listings</h3><p>Every submission is checked before it's published, so browsing stays trustworthy.</p></div>
+      </div>
+      <div class="value-item">
+        <i class="fa-solid fa-flag"></i>
+        <div><h3>Reportable</h3><p>Spot something off? Flag it in one tap — flagged listings get reviewed by hand.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how wrap">
+    <div class="section-head">
+      <h2>How Bizell works</h2>
+      <p>Three steps from listing to handshake. Bizell handles the introduction —<span style="color:red;"> the deal itself is between you two.</span></p>
+    </div>
+  </section>
+  <div class="how-steps">
+    <div class="how-step">
+      <div class="how-media"><div class="half"></div><img src="sit-clock.jpg" alt="A business listing going live in minutes"></div>
+      <div class="how-text">
+        <span class="step-label">List it</span>
+        <h3>Submit in minutes</h3>
+        <p>Add photos or a short video, your price, location, and a description. Save it as a draft or send it straight for review.</p>
+      </div>
+    </div>
+    <div class="how-step flip">
+      <div class="how-media"><div class="half"></div><img src="shake-hands.jpg" alt="Buyer and seller connecting directly"></div>
+      <div class="how-text">
+        <span class="step-label">Get found</span>
+        <h3>Buyers reach out directly</h3>
+        <p>Once your listing is live, interested buyers contact you directly. You decide who you talk to and what you share.</p>
+      </div>
+    </div>
+    <div class="how-step">
+      <div class="how-media"><div class="half"></div><img src="plane-hand.jpg" alt="The deal continuing off-platform"></div>
+      <div class="how-text">
+        <span class="step-label">Close off-platform</span>
+        <h3>You take it from there</h3>
+        <p>Bizell doesn't touch the sale itself — no escrow, no cut. Once you're talking,<span style="color:red;"> the deal is entirely yours to close.</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE / ACCESS BAND -->
+  <section class="access-band" style="padding:0;">
+    <div class="wrap" style="padding-top:80px; padding-bottom:80px;">
+      <div class="access-copy">
+        <span class="eyebrow" style="color:var(--red);">Any device</span>
+        <h2>Browse and list from your phone</h2>
+        <p>Bizell is built to work as well in your pocket as on a laptop — check new listings, message buyers, or submit a business from wherever you are.</p>
+        <a href="#listingGrid" class="btn btn-outline-white">Start browsing <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="access-visual">
+        <img src="mobile-phone.jpg" alt="Bizell open on a mobile phone">
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-band">
+    <div class="wrap">
+      <h2>Got a business to sell?</h2>
+      <p>Get it in front of buyers who are actually looking.</p>
+      <div class="cta-actions">
+        <a href="auth.html" class="btn btn-dark">Create seller account</a>
+        <a href="pricing.html" class="btn btn-outline-white">See pricing</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="bizell-logo.jpg" alt="Bizell">
+        <p>A marketplace for listing and finding real businesses and investments for sale. Bizell introduces buyers and sellers — the deal itself happens off-platform.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Marketplace</h4>
+        <a href="#listingGrid">Browse listings</a>
+        <a href="seller-dashboard.html">Sell a business</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="how.html">How it works</a>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <a href="auth.html">Log in</a>
+        <a href="auth.html">Sign up</a>
+        <a href="seller-dashboard.html">Seller dashboard</a>
+        <a href="buyer-dashboard.html">Buyer dashboard</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="how.html">Safety guidance</a>
+        <a href="terms-policy.html">Terms &amp; privacy</a>
+       
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> Bizell. All rights reserved.</span>
+      <a href="terms-policy.html">Terms of Service &amp; Privacy Policy</a>
+    </div>
+  </div>
+</footer>
+
+<!-- COOKIE CONSENT -->
+<div id="cookieBanner" role="region" aria-label="Cookie consent">
+  <div class="cookie-inner">
+    <img src="mascot-face.png" alt="" class="cookie-icon">
+    <p class="cookie-text">
+      Bizell uses essential cookies to keep you logged in and secure. With your consent, we'll also remember things like your saved search filters between visits.
+      Read the details in our <a href="terms-policy.html">Terms &amp; Privacy Policy</a>.
+    </p>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-reject" id="cookieReject">Reject</button>
+      <button class="cookie-btn cookie-accept" id="cookieAccept">Accept</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------------------------------------------------------------------
+  // Config — Worker base URLs. Update these if a Worker's deployed
+  // subdomain differs from what's set here.
+  // ---------------------------------------------------------------------
+  const AUTH_API = "https://auth-worker-bizell.kakoozaronald71.workers.dev";
+  const LISTINGS_API = "https://listings-worker-bizell.kakoozaronald71.workers.dev"; // FIXED name
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---------------------------------------------------------------------
+  // Mobile nav toggle
+  // ---------------------------------------------------------------------
+  const menuToggle = document.getElementById('menuToggle');
+  const primaryNav = document.getElementById('primaryNav');
+  menuToggle.addEventListener('click', () => {
+    const isOpen = primaryNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    menuToggle.innerHTML = isOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+  });
+
+  // ---------------------------------------------------------------------
+  // Auth state — GET /me using a stored idToken
+  // ---------------------------------------------------------------------
+  async function loadAuthState() {
+    const idToken = localStorage.getItem('bizell_idToken');
+    const authSlot = document.getElementById('authSlot');
+    if (!idToken) return;
+
+    try {
+      const resp = await fetch(`${AUTH_API}/me`, {
+        headers: { Authorization: `Bearer ${idToken}` }
+      });
+      if (!resp.ok) throw new Error('session invalid');
+      const user = await resp.json();
+      const dashboardHref = user.role === 'seller' ? 'seller-dashboard.html' : 'buyer-dashboard.html';
+      authSlot.innerHTML = `
+        <a href="${dashboardHref}" class="login-link"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <a href="${dashboardHref === 'seller-dashboard.html' ? 'seller-dashboard.html' : '#listingGrid'}" class="btn btn-primary">
+          ${user.role === 'seller' ? 'New listing' : 'Browse listings'}
+        </a>
+      `;
+    } catch (e) {
+      localStorage.removeItem('bizell_idToken');
+    }
+  }
+  loadAuthState();
+
+  // ---------------------------------------------------------------------
+  // Featured listings + Search Filters
+  // ---------------------------------------------------------------------
+  const listingGrid = document.getElementById('listingGrid');
+  const searchInput = document.getElementById('searchInput');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const priceFilter = document.getElementById('priceFilter');
+  const searchBtn = document.getElementById('searchBtn');
+
+  function renderSkeletons(count) {
+    listingGrid.innerHTML = Array.from({ length: count }).map(() => `
+      <div class="listing-card skeleton">
+        <div class="skel-block skel-media"></div>
+        <div class="skel-body">
+          <div class="skel-block skel-line"></div>
+          <div class="skel-block skel-line short"></div>
+          <div class="skel-block skel-line"></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function currency(n) {
+    const num = Number(n) || 0;
+    return num.toLocaleString('en-UG') + ' UGX';
+  }
+
+  function renderListings(listings) {
+    if (!listings.length) {
+      listingGrid.innerHTML = `
+        <div class="listings-state">
+          <i class="fa-solid fa-store-slash"></i>
+          <h3>No live listings yet</h3>
+          <p>Be the first business on Bizell — submissions go live as soon as they pass review.</p>
+          <a href="seller-dashboard.html" class="btn btn-primary" style="margin-top:6px;">List your business</a>
+        </div>
+      `;
+      return;
+    }
+
+    listingGrid.innerHTML = listings.slice(0, 8).map(listing => {
+      const img = (listing.images && listing.images[0]) || listing.videoUrl || '';
+      return `
+        <a class="listing-card" href="listing.html?id=${encodeURIComponent(listing.id)}">
+          <div class="listing-media">
+            ${listing.category ? `<span class="listing-cat">${listing.category}</span>` : ''}
+            ${img ? `<img src="${img}" alt="${listing.businessName || 'Listing photo'}" loading="lazy">` : ''}
+          </div>
+          <div class="listing-body">
+            <h3>${listing.businessName || 'Untitled listing'}</h3>
+            <div class="listing-meta"><i class="fa-solid fa-location-dot"></i> ${listing.location || 'Location not listed'}</div>
+            <div class="listing-price">${currency(listing.price)}</div>
+            <div class="listing-link">View listing <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+        </a>
+      `;
+    }).join('');
+  }
+
+  async function loadListings(category = '', priceRange = '', searchTerm = '') {
+    renderSkeletons(4);
+    
+    // Build query string for the backend
+    let url = `${LISTINGS_API}/listings`;
+    const params = new URLSearchParams();
+    if (category) params.append('category', category);
+    // Note: Price filters require backend update (see below)
+    // if (priceRange) params.append('priceRange', priceRange);
+    // if (searchTerm) params.append('search', searchTerm);
+    if (params.toString()) url += '?' + params.toString();
+
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error('listings request failed');
+      const data = await resp.json();
+      
+      // Client-side filtering for price and search until backend supports it
+      let filtered = Array.isArray(data) ? data : [];
+      
+      // Simple client-side search filter
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filtered = filtered.filter(l => 
+          (l.businessName && l.businessName.toLowerCase().includes(term)) ||
+          (l.description && l.description.toLowerCase().includes(term))
+        );
+      }
+      
+      // Client-side price filter
+      if (priceRange) {
+        const [min, max] = priceRange.split('-').map(Number);
+        filtered = filtered.filter(l => {
+          const p = Number(l.price) || 0;
+          return p >= min && (max === 999999999 || p <= max);
+        });
+      }
+      
+      renderListings(filtered);
+    } catch (e) {
+      listingGrid.innerHTML = `
+        <div class="listings-state">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <h3>Listings are unreachable right now</h3>
+          <p>We couldn't load live listings. Refresh the page in a moment, or check back shortly.</p>
+        </div>
+      `;
+    }
+  }
+
+  // Initial load
+  loadListings();
+
+  // Search/Filter trigger
+  function applyFilters() {
+    const cat = categoryFilter.value;
+    const price = priceFilter.value;
+    const search = searchInput.value.trim();
+    loadListings(cat, price, search);
+  }
+
+  searchBtn.addEventListener('click', applyFilters);
+  searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') applyFilters(); });
+
+  // ---------------------------------------------------------------------
+  // Cookie consent
+  // ---------------------------------------------------------------------
+  const cookieBanner = document.getElementById('cookieBanner');
+  const consent = localStorage.getItem('bizell_cookie_consent');
+  if (!consent) cookieBanner.classList.add('show');
+
+  document.getElementById('cookieAccept').addEventListener('click', () => {
+    localStorage.setItem('bizell_cookie_consent', 'accepted');
+    cookieBanner.classList.remove('show');
+  });
+  document.getElementById('cookieReject').addEventListener('click', () => {
+    localStorage.setItem('bizell_cookie_consent', 'rejected');
+    cookieBanner.classList.remove('show');
+  });
+</script>
+
+</body>
+</html>
