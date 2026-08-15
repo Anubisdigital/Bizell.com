@@ -44,7 +44,7 @@
             align-items: center;
             justify-content: space-between;
         }
-        .logo-mark img { height: 34px; width: auto;  }
+        .logo-mark img { height: 34px; width: auto; }
         .nav-actions { display: flex; gap: 16px; align-items: center; }
         .btn-outline-white {
             background: transparent; color: var(--white);
@@ -110,20 +110,31 @@
             background: var(--ink);
             color: var(--white);
             transition: background 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .btn-subscribe:hover { background: #000; }
+        .btn-subscribe:disabled { cursor: not-allowed; opacity: 0.75; }
+        .btn-subscribe:hover:not(:disabled) { background: #000; }
         .btn-subscribe.red { background: var(--red); }
-        .btn-subscribe.red:hover { background: var(--red-deep); }
+        .btn-subscribe.red:hover:not(:disabled) { background: var(--red-deep); }
+        .btn-subscribe .fa-spinner { animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .msg-box {
             margin-top: 16px;
-            padding: 12px;
+            padding: 14px 16px;
             font-size: 14px;
-            text-align: center;
+            text-align: left;
             display: none;
+            border-left: 4px solid transparent;
         }
-        .msg-box.error { display: block; background: #ffe6e6; color: var(--red); border: 1px solid var(--red); }
-        .msg-box.success { display: block; background: #e6ffe6; color: var(--green); border: 1px solid var(--green); }
+        .msg-box.error { display: flex; gap: 10px; align-items: flex-start; background: #ffe6e6; color: var(--red-deep); border-left-color: var(--red); }
+        .msg-box.success { display: flex; gap: 10px; align-items: flex-start; background: #e6ffe6; color: var(--green); border-left-color: var(--green); }
+        .msg-box.info { display: flex; gap: 10px; align-items: flex-start; background: #eef2ff; color: #2a3fb0; border-left-color: #2a3fb0; }
+        .msg-box i { margin-top: 2px; }
+        .msg-box .msg-title { font-weight: 700; display: block; margin-bottom: 2px; }
 
         footer {
             margin-top: auto;
@@ -139,7 +150,6 @@
 
 <header>
     <div class="wrap nav-row">
-        <!-- LOGO ADDED HERE -->
         <a href="index.html" class="logo-mark">
             <img src="bizell-logo.jpg" alt="Bizell">
         </a>
@@ -155,7 +165,6 @@
         <p>Get your business listed on Bizell and reach buyers who are actively looking.</p>
     </div>
 
-    <!-- Plans -->
     <div class="plans-grid">
         <!-- Normal Plan -->
         <div class="plan-card">
@@ -169,7 +178,9 @@
                 <li><i class="fa-solid fa-check"></i> Direct buyer contact</li>
                 <li><i class="fa-solid fa-xmark"></i> Kakooza Ronald video</li>
             </ul>
-            <button class="btn-subscribe" onclick="subscribe('normal')">Subscribe</button>
+            <button class="btn-subscribe" data-plan="normal" onclick="subscribe('normal', this)">
+                <span class="btn-label">Subscribe</span>
+            </button>
         </div>
 
         <!-- Kakooza Plan -->
@@ -183,7 +194,9 @@
                 <li><i class="fa-solid fa-check"></i> Video posted on social media</li>
                 <li><i class="fa-solid fa-check"></i> Premium visibility</li>
             </ul>
-            <button class="btn-subscribe red" onclick="subscribe('kakooza')">Subscribe</button>
+            <button class="btn-subscribe red" data-plan="kakooza" onclick="subscribe('kakooza', this)">
+                <span class="btn-label">Subscribe</span>
+            </button>
         </div>
     </div>
 
@@ -197,53 +210,107 @@
 <script>
     // ============================================================
     // CONFIG
+    // Using the live Worker URL directly. Once pay.bizellug.com is
+    // added as a custom domain on payment-worker-bizell, switch this
+    // to "https://pay.bizellug.com" instead.
     // ============================================================
-    const PAYMENTS_API = "https://pay.bizellug.com";
+    const PAYMENTS_API = "https://payment-worker-bizell.kakoozaronald71.workers.dev";
+
+    const msg = document.getElementById('subMsg');
+
+    function showMessage(type, title, detail) {
+        msg.className = 'msg-box ' + type;
+        const icon = type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info';
+        msg.innerHTML = `
+            <i class="fa-solid ${icon}"></i>
+            <span>
+                <span class="msg-title">${title}</span>
+                ${detail ? detail : ''}
+            </span>
+        `;
+        msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function hideMessage() {
+        msg.className = 'msg-box';
+        msg.innerHTML = '';
+    }
+
+    function setLoading(isLoading, activeBtn) {
+        document.querySelectorAll('.btn-subscribe').forEach(btn => {
+            btn.disabled = isLoading;
+            if (btn === activeBtn) {
+                btn.innerHTML = isLoading
+                    ? '<i class="fa-solid fa-spinner"></i><span class="btn-label">Processing...</span>'
+                    : '<span class="btn-label">Subscribe</span>';
+            } else if (!isLoading) {
+                btn.innerHTML = '<span class="btn-label">Subscribe</span>';
+            }
+        });
+    }
 
     // ============================================================
     // SUBSCRIBE FUNCTION
     // ============================================================
-    async function subscribe(plan) {
-        const msg = document.getElementById('subMsg');
-        msg.className = 'msg-box';
-        msg.style.display = 'none';
+    async function subscribe(plan, btnEl) {
+        hideMessage();
 
         // 1. Check if user is logged in
         const uid = localStorage.getItem('bizell_uid');
         if (!uid) {
-            msg.className = 'msg-box error';
-            msg.textContent = 'You must be logged in to subscribe. Please log in first.';
-            msg.style.display = 'block';
-            setTimeout(() => { window.location.href = 'auth.html'; }, 2000);
+            showMessage('error', 'You need to log in first', 'Redirecting you to the login page...');
+            setTimeout(() => { window.location.href = 'auth.html'; }, 1800);
             return;
         }
 
-        // 2. Disable buttons
-        const btns = document.querySelectorAll('.btn-subscribe');
-        btns.forEach(b => { b.disabled = true; b.textContent = 'Processing...'; });
+        setLoading(true, btnEl);
+
+        // Keep the spinner visible for a minimum stretch so it doesn't
+        // flash instantly on fast connections — feels broken otherwise.
+        const minWait = new Promise(resolve => setTimeout(resolve, 600));
 
         try {
-            const resp = await fetch(`${PAYMENTS_API}/create-checkout`, {
+            const email = localStorage.getItem('bizell_email') || '';
+            const phone = localStorage.getItem('bizell_phone') || '';
+
+            const fetchPromise = fetch(`${PAYMENTS_API}/create-checkout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid, plan, email: '', phone: '' })
+                body: JSON.stringify({ uid, plan, email, phone })
             });
-            const data = await resp.json();
+
+            const [resp] = await Promise.all([fetchPromise, minWait]);
+
+            let data;
+            try {
+                data = await resp.json();
+            } catch (parseErr) {
+                throw new Error(`Server returned an unreadable response (status ${resp.status}).`);
+            }
+
+            if (!resp.ok) {
+                // Surface the exact error the backend gave us, not a generic message
+                throw new Error(data.detail || data.error || `Request failed with status ${resp.status}.`);
+            }
 
             if (data.checkoutUrl) {
-                // Redirect user to Pesapal
+                showMessage('success', 'Redirecting to payment...', 'You will be taken to Pesapal to complete your subscription.');
                 window.location.href = data.checkoutUrl;
+                return; // leave loading state on — page is navigating away
             } else {
-                msg.className = 'msg-box error';
-                msg.textContent = data.error || 'Failed to create payment link. Please try again.';
-                msg.style.display = 'block';
-                btns.forEach(b => { b.disabled = false; b.textContent = 'Subscribe'; });
+                throw new Error('No checkout link was returned by the server.');
             }
         } catch (err) {
-            msg.className = 'msg-box error';
-            msg.textContent = 'Network error. Please try again.';
-            msg.style.display = 'block';
-            btns.forEach(b => { b.disabled = false; b.textContent = 'Subscribe'; });
+            // Distinguish a real network/CORS failure from a server-returned error
+            const isNetworkFailure = err instanceof TypeError;
+            showMessage(
+                'error',
+                isNetworkFailure ? 'Could not reach the payment server' : 'Payment could not be started',
+                isNetworkFailure
+                    ? `This usually means the payment service is unreachable or misconfigured. (${err.message})`
+                    : err.message
+            );
+            setLoading(false, btnEl);
         }
     }
 </script>
