@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bizell — Buyer Dashboard</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --red: #ed1717;
+            --red-deep: #c00f0f;
+            --ink: #111111;
+            --white: #ffffff;
+            --paper: #f5f4f1;
+            --gray: #6b6b6b;
+            --green: #17963a;
+            --display: 'Space Grotesk', sans-serif;
+            --body: 'IBM Plex Sans', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+        body {
+            font-family: var(--body);
+            background: var(--paper);
+            color: var(--ink);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .wrap { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+
+        /* --- Header --- */
+        header {
+            background: var(--ink);
+            color: var(--white);
+            padding: 16px 0;
+            border-bottom: 2px solid var(--ink);
+        }
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo-mark img { height: 34px; width: auto; filter: brightness(0) invert(1); }
+        .nav-actions { display: flex; gap: 16px; align-items: center; }
+        .btn-outline-white {
+            background: transparent; color: var(--white);
+            border: 2px solid var(--white);
+            padding: 8px 16px;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .btn-outline-white:hover { background: var(--white); color: var(--ink); }
+
+        /* --- Dashboard Grid --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            padding: 40px 0;
+        }
+        @media (max-width: 860px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--white);
+            border: 2px solid var(--ink);
+            padding: 24px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--paper);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .card-header h2 {
+            font-family: var(--display);
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .btn-primary {
+            background: var(--red);
+            color: var(--white);
+            padding: 10px 18px;
+            font-family: var(--display);
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: var(--red-deep); }
+
+        /* --- Saved Listings --- */
+        .saved-item {
+            border: 1px solid #e4e4e4;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .saved-item .info h4 { font-size: 16px; font-weight: 600; }
+        .saved-item .info p { font-size: 13px; color: var(--gray); }
+        .btn-unsave {
+            background: transparent;
+            border: 1px solid var(--red);
+            color: var(--red);
+            padding: 6px 14px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-unsave:hover { background: var(--red); color: var(--white); }
+
+        /* --- Reports --- */
+        .report-item {
+            border: 1px solid #e4e4e4;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .report-item h4 { font-size: 15px; font-weight: 600; }
+        .report-item p { font-size: 13px; color: var(--gray); }
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            text-transform: uppercase;
+        }
+        .badge.pending { background: #ffc107; color: #111; }
+        .badge.resolved { background: var(--green); color: var(--white); }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        .empty-state i { font-size: 28px; color: var(--red); display: block; margin-bottom: 10px; }
+
+        footer {
+            margin-top: auto;
+            background: var(--ink);
+            color: #999;
+            text-align: center;
+            padding: 32px 0;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="wrap nav-row">
+        <a href="index.html" class="logo-mark">
+            <img src="bizell-logo.jpg" alt="Bizell">
+        </a>
+        <div class="nav-actions">
+            <span id="buyerName" style="font-size:14px; font-weight:600;"></span>
+            <button class="btn-outline-white" id="logoutBtn">Logout</button>
+        </div>
+    </div>
+</header>
+
+<main class="wrap dashboard-grid">
+
+    <!-- LEFT COLUMN: Saved Listings -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-heart" style="color:var(--red);"></i> Saved Listings</h2>
+            </div>
+            <div id="savedList">
+                <div class="empty-state">
+                    <i class="fa-solid fa-heart-circle-plus"></i>
+                    <p>You haven't saved any listings yet.</p>
+                    <a href="index.html" class="btn-primary" style="display:inline-block; margin-top:10px; text-decoration:none;">Browse listings</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: My Fraud Reports -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-flag" style="color:var(--red);"></i> My Reports</h2>
+            </div>
+            <div id="reportList">
+                <div class="empty-state">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <p>You haven't filed any fraud reports yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <div class="wrap">&copy; 2026 Bizell. Buyer Dashboard.</div>
+</footer>
+
+<script>
+    // ============================================================
+    // CONFIG — Using your EXACT worker names (unchanged)
+    // ============================================================
+    const AUTH_API = "https://auth-worker-bizell.kakoozaronald71.workers.dev";
+    const LISTINGS_API = "https://listings-worker-bizell.kakoozaronald71.workers.dev";
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    let currentUid = localStorage.getItem('bizell_uid');
+    let idToken = localStorage.getItem('bizell_idToken');
+
+    if (!idToken || !currentUid) {
+        window.location.href = 'auth.html';
+    }
+
+    // ============================================================
+    // UI REFS
+    // ============================================================
+    const buyerName = document.getElementById('buyerName');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const savedList = document.getElementById('savedList');
+    const reportList = document.getElementById('reportList');
+
+    // ============================================================
+    // LOAD BUYER DATA
+    // ============================================================
+    async function loadBuyerData() {
+        try {
+            const resp = await fetch(`${AUTH_API}/me`, {
+                headers: { Authorization: `Bearer ${idToken}` }
+            });
+            if (!resp.ok) throw new Error('Unauthorized');
+            const user = await resp.json();
+            buyerName.textContent = user.fullName || 'Buyer';
+        } catch (e) {
+            window.location.href = 'auth.html';
+        }
+    }
+
+    // ============================================================
+    // LOAD SAVED LISTINGS (Mocked — requires backend save/unsave endpoint)
+    // ============================================================
+    async function loadSavedListings() {
+        try {
+            // TEMPORARY: We use a mock array because the backend doesn't have /saved yet.
+            // In production, this will be: fetch(`${LISTINGS_API}/listings/saved`)
+            const mockSaved = []; 
+
+            if (mockSaved.length === 0) {
+                savedList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-heart-circle-plus"></i>
+                        <p>You haven't saved any listings yet.</p>
+                        <a href="index.html" class="btn-primary" style="display:inline-block; margin-top:10px; text-decoration:none;">Browse listings</a>
+                    </div>
+                `;
+                return;
+            }
+
+            savedList.innerHTML = mockSaved.map(l => `
+                <div class="saved-item">
+                    <div class="info">
+                        <h4>${l.businessName}</h4>
+                        <p>${l.location} · ${l.price ? Number(l.price).toLocaleString() + ' UGX' : ''}</p>
+                    </div>
+                    <button class="btn-unsave" onclick="unsaveListing('${l.id}')">
+                        <i class="fa-solid fa-trash-can"></i> Unsave
+                    </button>
+                </div>
+            `).join('');
+        } catch (e) {
+            savedList.innerHTML = `<div class="empty-state" style="color:var(--red);">Error loading saved listings.</div>`;
+        }
+    }
+
+    // ============================================================
+    // UN-SAVE LISTING (Placeholder)
+    // ============================================================
+    window.unsaveListing = async function(listingId) {
+        if (!confirm('Remove this listing from your saved list?')) return;
+        // TODO: Connect to backend endpoint DELETE /listings/saved/{id}
+        alert('Unsave feature coming soon.');
+        loadSavedListings();
+    };
+
+    // ============================================================
+    // LOAD MY FRAUD REPORTS (Queries Firestore directly via REST)
+    // ============================================================
+    async function loadMyReports() {
+        try {
+            // Using the reports-and-admin-worker we built earlier
+            const resp = await fetch(`https://reports-and-admin-worker.kakoozaronald71.workers.dev/reports/my`, {
+                headers: { Authorization: `Bearer ${idToken}` }
+            });
+            
+            if (!resp.ok) throw new Error('Failed to fetch reports');
+            const data = await resp.json();
+
+            if (!data.length) {
+                reportList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <p>You haven't filed any fraud reports yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            reportList.innerHTML = data.map(r => `
+                <div class="report-item">
+                    <h4>${r.businessName || 'Unknown business'}</h4>
+                    <p><i class="fa-solid fa-message"></i> "${r.reason || 'No reason provided'}"</p>
+                    <p style="font-size:12px; margin-top:4px;">
+                        Status: <span class="badge ${r.status === 'resolved' ? 'resolved' : 'pending'}">${r.status || 'Pending'}</span>
+                    </p>
+                </div>
+            `).join('');
+        } catch (e) {
+            reportList.innerHTML = `<div class="empty-state" style="color:var(--red);">Could not load reports.</div>`;
+        }
+    }
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('bizell_idToken');
+        localStorage.removeItem('bizell_uid');
+        localStorage.removeItem('bizell_role');
+        window.location.href = 'index.html';
+    });
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadBuyerData();
+    loadSavedListings();
+    loadMyReports();
+</script>
+</body>
+</html>
